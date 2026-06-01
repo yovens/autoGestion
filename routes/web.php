@@ -28,7 +28,7 @@ use App\Http\Controllers\Client\CartController;
 use App\Http\Controllers\Client\LoanController as ClientLoan;
 use App\Http\Controllers\Client\ContactController;
 use App\Http\Controllers\Client\PurchaseController;
-
+use App\Http\Controllers\Client\ProfileController;
 // Middlewares
 use App\Http\Middleware\IsAdmin;
 use App\Http\Middleware\IsClient;
@@ -89,6 +89,10 @@ Route::get('/loans/{id}', [LoanController::class, 'show'])->name('loans.show');
 Route::put('/loans/{id}', [LoanController::class, 'update'])->name('loans.update');
 Route::post('/loans/{id}/renew', [LoanController::class, 'renew'])->name('loans.renew');
 Route::delete('/loans/{id}', [LoanController::class, 'destroy'])->name('loans.destroy');
+// Asire w wout la gen non sa a anndan gwoup la
+    Route::post('/loans/approve-renewal/{id}', [App\Http\Controllers\Admin\LoanController::class, 'approveRenewal'])->name('loans.approve-renewal');
+
+
 
 // 🔥 RANPLASE LIY SA A KONSAMAN (Wete "admin.") :
 Route::post('/loans', [LoanController::class, 'store'])->name('loans.store');
@@ -106,42 +110,38 @@ Route::delete('/transactions/{transaction}', [TransactionController::class, 'des
 | 🧑‍🤝‍🧑 CLIENT ROUTES
 |--------------------------------------------------------------------------
 */
+
 Route::prefix('client')
     ->name('client.')
     ->middleware(['auth', IsClient::class, CheckUserStatus::class])
     ->group(function () {
-     
-        // Dashboard Client
+       
+        // Dashboard
         Route::get('/dashboard', [ClientDashboard::class, 'index'])->name('dashboard');
       
-        // Catalog Veyikil pou Kliyan
+        // Vehicles
         Route::get('/vehicles', [ClientVehicle::class, 'index'])->name('vehicles');
         Route::get('/vehicle/{id}', [ClientVehicle::class, 'show'])->name('vehicle.show');
 
-        // Panier (Cart)
-        Route::get('/cart', [CartController::class,'index'])->name('cart');
-        Route::post('/cart/add/{id}', [CartController::class,'add'])->name('cart.add');
-        Route::delete('/cart/delete/{id}', [CartController::class,'delete'])->name('cart.delete');
+        // Cart
+        Route::get('/cart', [CartController::class, 'index'])->name('cart');
+        Route::post('/cart/add/{id}', [CartController::class, 'add'])->name('cart.add');
+        Route::delete('/cart/delete/{id}', [CartController::class, 'delete'])->name('cart.delete');
 
-        // Locations Client ak wout Renouvèlman pa l
-        Route::get('/loan', [ClientLoan::class,'index'])->name('loan');
-        Route::post('/loan/start/{id}', [ClientLoan::class,'start'])->name('loan.start');
-        Route::post('/loans/{id}/renew', [ClientLoan::class, 'renew'])->name('loans.renew');
+        // Loans & Renewals
+        Route::get('/loan', [ClientLoan::class, 'index'])->name('loan');
+        Route::post('/loan/start/{id}', [ClientLoan::class, 'start'])->name('loan.start');
+        Route::post('/loan/renew/{id}', [ClientLoan::class, 'renew'])->name('loan.renew');
 
-        // Achats (Purchases)
-        Route::post('/purchase/start/{id}', [PurchaseController::class,'start'])->name('purchase.start');
-        Route::post('/purchase/store', [PurchaseController::class,'store'])->name('purchase.store');
+        // Profile (Kounye a li byen plase anndan gwoup client)
+        Route::get('/profile', [ProfileController::class, 'show'])->name('profile');
+        Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
 
-        // Istorik Transaksyon
-        Route::get('/transactions', [ClientLoan::class,'transactions'])->name('transactions');
+        // Transactions
+        Route::get('/transactions', [ClientLoan::class, 'transactions'])->name('transactions');
 
-        // Paj Divès & Kontak
-        Route::get('/about', [ClientDashboard::class,'about'])->name('about');
-        Route::get('/contact', [ContactController::class,'index'])->name('contact');
-        Route::post('/contact/send', [ContactController::class,'send'])->name('contact.send');
+        // Contact & About
+        Route::get('/about', [ClientDashboard::class, 'about'])->name('about');
+        Route::get('/contact', [ContactController::class, 'index'])->name('contact');
+        Route::post('/contact/send', [ContactController::class, 'send'])->name('contact.send');
     });
-
-// Wout jeneral pou itilizatè konekte yo
-Route::middleware(['auth', CheckUserStatus::class])->group(function () {
-    Route::get('/dashboard', [ClientDashboard::class, 'index']);
-});

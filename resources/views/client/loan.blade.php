@@ -74,6 +74,75 @@ body {
         
         #theme-toggle { background: rgba(128,128,128,0.1); border: none; padding: 10px; border-radius: 50%; color: var(--text-color); cursor: pointer; }
         .btn-logout { background: #ef4444; color: white; border: none; padding: 10px 15px; border-radius: 10px; cursor: pointer; }
+    .btn-renew {
+    transition: opacity 0.3s;
+}
+.btn-renew:hover {
+    opacity: 0.8;
+}
+    /* Container fòm lan */
+.renewal-form-container {
+    background: rgba(128, 128, 128, 0.05);
+    padding: 15px;
+    border-radius: 12px;
+    margin-top: 15px;
+}
+
+/* Input style */
+.renewal-input {
+    background: var(--bg-color) !important;
+    border: 1px solid rgba(128, 128, 128, 0.3) !important;
+    color: var(--text-color) !important;
+    border-radius: 8px 0 0 8px !important;
+    padding: 10px;
+}
+
+/* Bouton style */
+.renewal-btn {
+    background: var(--primary) !important;
+    border: none !important;
+    color: white !important;
+    padding: 0 15px;
+    border-radius: 0 8px 8px 0 !important;
+    font-weight: 600;
+    transition: 0.3s;
+}
+
+.renewal-btn:hover {
+    filter: brightness(1.2);
+    cursor: pointer;
+}
+
+/* Ti tèks anba a */
+.renewal-helper {
+    font-size: 0.75rem;
+    color: #64748b;
+    margin-top: 8px;
+    display: block;
+}
+.renewal-btn {
+    background: var(--primary) !important;
+    color: #fff !important;
+    border: none !important;
+    padding: 8px 20px !important;
+    font-weight: 600 !important;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    transition: all 0.3s ease !important;
+    display: inline-flex;
+    align-items: center;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.renewal-btn:hover {
+    filter: brightness(1.2);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px -2px rgba(0, 0, 0, 0.2);
+}
+
+.renewal-btn:active {
+    transform: translateY(0);
+}
     </style>
 </head>
 <body>
@@ -89,6 +158,7 @@ body {
                <a href="{{ route('client.transactions') }}"><i class="fas fa-exchange-alt"></i> Transactions</a>
 
               <a href="{{ route('client.contact') }}"><i class="fas fa-headset"></i> Contact</a>
+                 <a href="{{ route('client.profile') }}"><i class="fas fa-user-circle"></i> Profil</a>
         </nav>
         <div class="nav-actions">
             <button id="theme-toggle"><i class="fas fa-moon"></i></button>
@@ -108,32 +178,61 @@ body {
             <p>Aucune location enregistrée pour le moment.</p>
         </div>
     @else
-        <div class="grid">
-            @foreach($loans as $loan)
-            <div class="card">
-                <div class="header">
-                    <span class="title">{{ $loan->vehicle->brand }} {{ $loan->vehicle->model }}</span>
-                    @php
-                        $map = [
-                            'approved' => ['class' => 'b-approuve', 'label' => 'Approuvé'],
-                            'expired'  => ['class' => 'b-expire', 'label' => 'Expiré'],
-                            'rejected' => ['class' => 'b-refuse', 'label' => 'Refusé'],
-                            'pending'  => ['class' => 'b-attente', 'label' => 'En attente']
-                        ];
-                        $s = $map[$loan->status] ?? ['class' => '', 'label' => $loan->status];
-                    @endphp
-                    <span class="badge {{ $s['class'] }}">{{ $s['label'] }}</span>
-                </div>
-                <div style="font-size: 0.9rem;">
-                    <p><i class="fas fa-calendar-alt"></i> <strong>Début:</strong> {{ \Carbon\Carbon::parse($loan->start_date)->format('d/m/Y') }}</p>
-                    <p><i class="fas fa-calendar-check"></i> <strong>Fin:</strong> {{ \Carbon\Carbon::parse($loan->end_date)->format('d/m/Y') }}</p>
-                    <p><i class="fas fa-hourglass-half"></i> <strong>Durée:</strong> {{ $loan->duration_days }} jours</p>
-                </div>
-                <div style="margin-top: 15px; border-top: 1px solid #eee; padding-top: 10px;">
-                    <span class="price">{{ number_format($loan->total_amount, 2) }} USD</span>
-                </div>
+     <div class="grid">
+    @foreach($loans as $loan)
+    <div class="card">
+        <div class="header">
+            <span class="title">{{ $loan->vehicle->brand }} {{ $loan->vehicle->model }}</span>
+            @php
+                $map = [
+                    'approved' => ['class' => 'b-approuve', 'label' => 'Approuvé'],
+                    'expired'  => ['class' => 'b-expire', 'label' => 'Expiré'],
+                    'rejected' => ['class' => 'b-refuse', 'label' => 'Refusé'],
+                    'pending'  => ['class' => 'b-attente', 'label' => 'En attente'],
+                    'pending_renewal' => ['class' => 'b-attente', 'label' => 'Renouv. en attente']
+                ];
+                $s = $map[$loan->status] ?? ['class' => '', 'label' => $loan->status];
+            @endphp
+            <span class="badge {{ $s['class'] }}">{{ $s['label'] }}</span>
+        </div>
+        
+        <div style="font-size: 0.9rem;">
+            <p><i class="fas fa-calendar-alt"></i> <strong>Début:</strong> {{ $loan->start_date ? \Carbon\Carbon::parse($loan->start_date)->format('d/m/Y') : 'N/A' }}</p>
+            <p><i class="fas fa-calendar-check"></i> <strong>Fin:</strong> {{ $loan->end_date ? \Carbon\Carbon::parse($loan->end_date)->format('d/m/Y') : 'N/A' }}</p>
+            <p><i class="fas fa-hourglass-half"></i> <strong>Durée:</strong> {{ $loan->duration_days }} jours</p>
+        </div>
+        
+        <div style="margin-top: 15px; border-top: 1px solid #eee; padding-top: 10px;">
+            <span class="price">{{ number_format($loan->total_amount, 2) }} USD</span>
+        </div>
+
+        @if(in_array($loan->status, ['approved', 'expired']))
+<form method="POST" action="{{ route('client.loan.renew', $loan->id) }}" class="renewal-form-container">
+    @csrf
+    <div class="input-group">
+        <input type="number" 
+               name="additional_days" 
+               class="form-control renewal-input" 
+               placeholder="Nb de jours" 
+               min="1" 
+               required>
+        <button type="submit" class="btn renewal-btn">
+            <i class="fas fa-redo me-1"></i> Envoyer
+        </button>
+    </div>
+    <small class="renewal-helper">
+        <i class="fas fa-info-circle"></i> Ajouter des jours à la location.
+    </small>
+</form>
+        @elseif($loan->status == 'pending_renewal')
+            <div class="mt-3 text-muted small italic">
+                <i class="fas fa-clock"></i> Demande de renouvellement envoyée.
             </div>
-            @endforeach
+        @endif
+    </div>
+    @endforeach
+
+         
         </div>
     @endif
 </main>

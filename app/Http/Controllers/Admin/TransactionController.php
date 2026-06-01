@@ -15,13 +15,13 @@ class TransactionController extends Controller
 
     // Pou kreyasyon yon tranzaksyon dirèkteman depi nan panèl admin nan
     public function store(Request $request) {
-        $request->validate([
-            'user_id' => 'required|exists:users,id',
-            'vehicle_id' => 'required|exists:vehicles,id',
-            'amount' => 'required|numeric|min:0',
-            'type' => 'required|in:location,vente',
-        ]);
-
+   $request->validate([
+        'user_id'    => 'required|exists:users,id',
+        'vehicle_id' => 'required|exists:vehicles,id',
+        'amount'     => 'required|numeric|min:0',
+        // Validasyon an dwe matche ak ENUM lan:
+        'type'       => 'required|in:location,vente', 
+    ]);
         $transaction = new Transaction();
         $transaction->user_id = $request->user_id;
         $transaction->vehicle_id = $request->vehicle_id;

@@ -13,7 +13,8 @@ class LoanCart extends Model
         'total_amount', 
         'status', 
         'start_date', 
-        'end_date'
+        'end_date',
+    'renewal_requested_days'
     ];
 
     // Pou Laravel toujou trete jaden sa yo tankou Dat otomatikman

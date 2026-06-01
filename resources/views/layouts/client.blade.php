@@ -13,15 +13,16 @@
   <header class="navbar">
     <div class="nav-wrapper">
         <a href="{{ route('client.dashboard') }}" class="logo">AutoGestion</a>
-        <nav class="nav-links">
-            <a href="{{ route('client.dashboard') }}" class=""><i class="fas fa-home"></i> Dashboard</a>
-            <a href="{{ route('client.vehicles') }}"><i class="fas fa-car"></i> Véhicules</a>
-            <a href="{{ route('client.cart') }}"><i class="fas fa-shopping-cart"></i> Panier</a>
-            <a href="{{ route('client.loan') }}"><i class="fas fa-key"></i> Locations</a>
-               <a href="{{ route('client.transactions') }}"><i class="fas fa-exchange-alt"></i> Transactions</a>
-
-              <a href="{{ route('client.contact') }}"><i class="fas fa-headset"></i> Contact</a>
-        </nav>
+      <nav class="nav-links">
+    <a href="{{ route('client.dashboard') }}"><i class="fas fa-home"></i> Dashboard</a>
+    <a href="{{ route('client.vehicles') }}"><i class="fas fa-car"></i> Véhicules</a>
+    <a href="{{ route('client.cart') }}"><i class="fas fa-shopping-cart"></i> Panier</a>
+    <a href="{{ route('client.loan') }}"><i class="fas fa-key"></i> Locations</a>
+    <a href="{{ route('client.transactions') }}"><i class="fas fa-exchange-alt"></i> Transactions</a>
+    <a href="{{ route('client.contact') }}"><i class="fas fa-headset"></i> Contact</a>
+    
+    <a href="{{ route('client.profile') }}"><i class="fas fa-user-circle"></i> Profil</a>
+</nav>
         <div class="nav-actions">
             <button id="theme-toggle"><i class="fas fa-moon"></i></button>
             <form method="POST" action="{{ route('logout') }}" style="margin:0;">

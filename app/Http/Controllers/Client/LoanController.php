@@ -70,38 +70,28 @@ class LoanController extends Controller
         return view('client.transactions', compact('transactions'));
     }
 
-    public function renew(Request $request, $id)
-    {
-        $loan = LoanCart::findOrFail($id);
+public function renew(Request $request, $id)
+{
+    // Validate kantite jou yo
+    $request->validate([
+        'additional_days' => 'required|integer|min:1'
+    ]);
 
-        // Kliyan an ka mande renouvle sèlman si lokasyon an te apwouve oswa si l ekspire
-        if (!in_array($loan->status, ['approved', 'expired'])) {
-            return back()->with('error', 'Vous nou pouvez pas renouveler cette location.');
-        }
+    $loan = LoanCart::findOrFail($id);
 
-        $request->validate([
-            'additional_days' => 'required|integer|min:1'
-        ]);
-
-        $days = $request->input('additional_days');
-        $vehicle = $loan->vehicle;
-        $additional_price = $vehicle->loan_price * $days;
-
-        // Nou ogmante jou ak pri a dirèkteman
-        $loan->duration_days += $days;
-        $loan->total_amount += $additional_price;
-
-        // Nou ka swa mete l an "pending" pou admin aksepte, oswa tou apwouve l otomatikman. 
-        if ($loan->isExpired()) {
-            $loan->start_date = \Carbon\Carbon::now();
-            $loan->end_date = \Carbon\Carbon::now()->addDays($days);
-        } else {
-            $loan->end_date = \Carbon\Carbon::parse($loan->end_date)->addDays($days);
-        }
-
-        $loan->status = 'approved';
-        $loan->save();
-
-        return back()->with('success', "Votre location a été renouvelée de $days jours !");
+    // Kliyan an ka mande renouvèlman sèlman si li apwouve oswa ekspire
+    if (!in_array($loan->status, ['approved', 'expired'])) {
+        return back()->with('error', 'Action non autorisée.');
     }
+
+    // Nou anrejistre demann lan
+    // Nòt: Ou ta dwe ajoute yon kolòn 'renewal_days_requested' nan tab loans ou
+   // Chanje non jaden an pou l matche
+$loan->update([
+    'status' => 'pending_renewal',
+    'renewal_requested_days' => $request->additional_days // Fè atansyon ak non an
+]);
+    
+    return back()->with('success', 'Votre demande de renouvellement a été envoyée à l\'administrateur.');
+}
 }

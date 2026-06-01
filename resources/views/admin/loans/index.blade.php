@@ -175,6 +175,36 @@
                                     <i class="bi bi-trash-fill"></i> 
                                 </button>
                             </form>
+
+
+
+                            @if($loan->status == 'pending_renewal')
+@if($loan->status == 'pending_renewal')
+    <div style="background: #fef3c7; padding: 5px; border-radius: 6px; margin-bottom: 5px; font-size: 12px; color: #92400e;">
+        <strong>Demande:</strong> {{ $loan->renewal_requested_days }} jours
+    </div>
+<form method="POST" action="{{ route('admin.loans.approve-renewal', $loan->id) }}">
+    @csrf
+    <div class="renewal-form-container">
+        <input type="number" 
+               name="additional_days" 
+               value="{{ $loan->renewal_requested_days }}" 
+               class="form-control" 
+               style="width: 70px;" 
+               required>
+        
+        <button type="submit" class="btn btn-success btn-sm">Approuver</button>
+   
+    </div>
+    <p class="mt-2 mb-0" style="font-size: 13px; color: #4a5568;">
+        Nouveau total: 
+        <strong style="color: #2d3748;">
+            {{ number_format($loan->vehicle->loan_price * ($loan->duration_days + $loan->renewal_requested_days), 2) }} USD
+        </strong>
+    </p>
+</form>
+@endif
+@endif
                         </div>
                     </td>
                 </tr>
@@ -301,5 +331,24 @@
             background-color: #0f172a;
             color: #fff;
         }
+        .renewal-form-container {
+    display: flex;
+    align-items: center; /* Aliyen yo vètikalman nan mitan */
+    gap: 8px;           /* Mete yon ti espas ant input ak bouton */
+}
+
+.btn-success {
+    background-color: #28a745;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+}
+
+.btn-success:hover {
+    background-color: #218838;
+}
     </style>
 @endsection
